@@ -804,36 +804,45 @@ function chiliGetUser(callback) {
 }
 
 function chiliSaveGcode() {
-    var key = 'org-jscut-gcode-' + gcodeConversionViewModel.gcodeFilename();
-    chiliGetUser(function (userId) {
-        var alert = showAlert("Sending gcode to chilipeppr.com", "alert-info", false);
-        $.ajax({
-            url: "http://www.chilipeppr.com/dataput",
-            type: "POST",
-            crossDomain: true,
-            xhrFields: {
-                withCredentials: true
-            },
-            data: { key: key, val: gcodeConversionViewModel.gcode() },
-            dataType: "json",
-        })
-        .done(function (content) {
-            alert.remove();
-            if(content.Error)
-                showAlert(content.msg);
-            else if (typeof content.Value !== "undefined") {
-                miscViewModel.launchChiliUrl('http://chilipeppr.com/tinyg?loadJscut=' + encodeURIComponent(key));
-                $('#save-gcode-modal').modal('hide');
-                $('#launch-chilipeppr-modal').modal('show');
-            }
-            else
-                showAlert("Can't save gcode to http://chilipeppr.com/", "alert-danger");
-        })
-        .fail(function (e) {
-            alert.remove();
-            showAlert("Can't save gcode to http://chilipeppr.com/", "alert-danger");
-        });
-    });
+    // var key = 'org-jscut-gcode-' + gcodeConversionViewModel.gcodeFilename();
+    // (function () {
+    //     var alert = showAlert("Sending gcode to chilipeppr.com", "alert-info", false);
+    //     $.ajax({
+    //         url: "localhost:8080/dataput",
+    //         type: "POST",
+    //         crossDomain: true,
+    //         xhrFields: {
+    //             withCredentials: true
+    //         },
+    //         data: { key: key, val: gcodeConversionViewModel.gcode() },
+    //         dataType: "json",
+    //     })
+    //     .done(function (content) {
+    //         alert.remove();
+    //         if(content.Error)
+    //             showAlert(content.msg);
+    //         else if (typeof content.Value !== "undefined") {
+    //             miscViewModel.launchChiliUrl('localhost:8080/tinyg?loadJscut=' + encodeURIComponent(key));
+    //             $('#save-gcode-modal').modal('hide');
+    //             $('#launch-chilipeppr-modal').modal('show');
+    //         }
+    //         else
+    //             showAlert("Can't save gcode to http://chilipeppr.com/", "alert-danger");
+    //     })
+    //     .fail(function (e) {
+    //         alert.remove();
+    //         showAlert("Can't save gcode to http://chilipeppr.com/", "alert-danger");
+    //     });
+    // })  ();
+    if(typeof(Storage) !== "undefined") {
+        // Code for localStorage/sessionStorage.
+        localStorage.setItem("gCodeFile", gcodeConversionViewModel.gcode());
+        console.log(localStorage.getItem("gCodeFile"));
+        window.open("../tinyg/");
+    } else {
+        // Sorry! No Web Storage support..
+        alert("Sorry! No Web Storage support. Unable to export SVG file.");
+    }
 }
 
 if (typeof options.preloadInBrowser == 'string' && options.preloadInBrowser.length > 0) {
